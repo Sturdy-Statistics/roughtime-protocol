@@ -15,6 +15,8 @@ See:
 
 The library aims to support *all* non-expired protocol versions, spanning both the Google (version 0) and IETF eras (currently versions 1–15).
 
+[![Clojars Project](https://img.shields.io/clojars/v/com.sturdystats/roughtime-protocol.svg)](https://clojars.org/com.sturdystats/roughtime-protocol)
+
 ## Protocol support
 
 All versions are supported **except** the expired IETF drafts **5** and **7**.
