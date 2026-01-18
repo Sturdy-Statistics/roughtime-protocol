@@ -17,6 +17,10 @@ The library aims to support *all* non-expired protocol versions, spanning both t
 
 [![Clojars Project](https://img.shields.io/clojars/v/com.sturdystats/roughtime-protocol.svg)](https://clojars.org/com.sturdystats/roughtime-protocol)
 
+```clojure
+{:deps {com.sturdystats/roughtime-protocol {:mvn/version "VERSION"}}}
+```
+
 ## Protocol support
 
 All versions are supported **except** the expired IETF drafts **5** and **7**.
@@ -169,51 +173,51 @@ Example measurements responding to protocol version 15 on a 2023 M2 MacBook Air,
 (The Google protocol is approximately 2× faster.)
 While this codebase is not intended for high-traffic production environments, it may be suitable for real-world use.
 
-<!-- ### Benchmarks (Per-Request Latency) -->
+### Benchmarks (Per-Request Latency)
 
-<!-- The following table compares the latency per request when processing 5,000 requests, either serially or in batches of 128. -->
+The following table compares the latency per request when processing 5,000 requests, either serially or in batches of 128.
 
-<!-- | Codebase   | Batch Size | Version       | Signature | Per Request (μs) | -->
-<!-- |------------|-----------:|---------------|-----------|-----------------:| -->
-<!-- | Google C++ |          1 | Google        | tweetnacl |              675 | -->
-<!-- | Google C++ |          1 | Google        | stubbed   |              1.8 | -->
-<!-- |------------|-----------:|---------------|-----------|-----------------:| -->
-<!-- | Clojure    |          1 | Google        | native    |             26.6 | -->
-<!-- | Clojure    |          1 | Google        | stubbed   |              4.3 | -->
-<!-- |------------|-----------:|---------------|-----------|-----------------:| -->
-<!-- | Clojure    |          1 | IETF Draft 15 | native    |             31.7 | -->
-<!-- | Clojure    |          1 | IETF Draft 15 | stubbed   |              9.2 | -->
-<!-- |------------|-----------:|---------------|-----------|-----------------:| -->
-<!-- | Clojure    |        128 | IETF Draft 15 | native    |              4.4 | -->
-<!-- | Clojure    |        128 | IETF Draft 15 | stubbed   |              4.2 | -->
-<!-- |------------|-----------:|---------------|-----------|-----------------:| -->
-<!-- | Clojure    |       1024 | random, mixed | native    |              7.7 | -->
-<!-- | Clojure    |       1024 | random, mixed | stubbed   |              7.6 | -->
+| Codebase   | Batch Size | Version       | Signature | Per Request (μs) |
+|------------|-----------:|---------------|-----------|-----------------:|
+| Google C++ |          1 | Google        | tweetnacl |              675 |
+| Google C++ |          1 | Google        | stubbed   |              1.8 |
+|------------|-----------:|---------------|-----------|-----------------:|
+| Clojure    |          1 | Google        | native    |             26.6 |
+| Clojure    |          1 | Google        | stubbed   |              4.3 |
+|------------|-----------:|---------------|-----------|-----------------:|
+| Clojure    |          1 | IETF Draft 15 | native    |             31.7 |
+| Clojure    |          1 | IETF Draft 15 | stubbed   |              9.2 |
+|------------|-----------:|---------------|-----------|-----------------:|
+| Clojure    |        128 | IETF Draft 15 | native    |              4.4 |
+| Clojure    |        128 | IETF Draft 15 | stubbed   |              4.2 |
+|------------|-----------:|---------------|-----------|-----------------:|
+| Clojure    |       1024 | random, mixed | native    |              7.7 |
+| Clojure    |       1024 | random, mixed | stubbed   |              7.6 |
 
-<!-- to reproduce these results, run `clj -X:load-test` -->
+to reproduce these results, run `clj -X:load-test`
 
-<!-- ``` -->
-<!-- Running with BouncyCastle ED25519 signatures -->
+```
+Running with BouncyCastle ED25519 signatures
 
-<!-- Evaluation count : 22686 in 6 samples of 3781 calls. -->
-<!--              Execution time mean : 26.613360 µs -->
-<!--     Execution time std-deviation : 76.163262 ns -->
-<!--    Execution time lower quantile : 26.530910 µs ( 2.5%) -->
-<!--    Execution time upper quantile : 26.689283 µs (97.5%) -->
-<!--                    Overhead used : 1.268150 ns -->
+Evaluation count : 22686 in 6 samples of 3781 calls.
+             Execution time mean : 26.613360 µs
+    Execution time std-deviation : 76.163262 ns
+   Execution time lower quantile : 26.530910 µs ( 2.5%)
+   Execution time upper quantile : 26.689283 µs (97.5%)
+                   Overhead used : 1.268150 ns
 
 
-<!-- Running with ED25519 signatures stubbed to no-op -->
+Running with ED25519 signatures stubbed to no-op
 
-<!-- Evaluation count : 143532 in 6 samples of 23922 calls. -->
-<!--              Execution time mean : 4.298360 µs -->
-<!--     Execution time std-deviation : 141.983103 ns -->
-<!--    Execution time lower quantile : 4.176511 µs ( 2.5%) -->
-<!--    Execution time upper quantile : 4.455419 µs (97.5%) -->
-<!--                    Overhead used : 1.268150 ns -->
+Evaluation count : 143532 in 6 samples of 23922 calls.
+             Execution time mean : 4.298360 µs
+    Execution time std-deviation : 141.983103 ns
+   Execution time lower quantile : 4.176511 µs ( 2.5%)
+   Execution time upper quantile : 4.455419 µs (97.5%)
+                   Overhead used : 1.268150 ns
 
-<!-- … -->
-<!-- ``` -->
+…
+```
 
 ## API
 
