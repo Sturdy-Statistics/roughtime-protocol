@@ -1,0 +1,110 @@
+\documentclass{standalone}
+
+\usepackage[charter]{mathdesign}
+\usepackage{XCharter}
+
+%% /Users/mkmcc/Library/texmf/tex/latex/sturdystatsplots.sty
+\usepackage{sturdystatsplots}
+
+\usepgfplotslibrary{groupplots}
+
+%% for reference:
+%%
+%% \tikzset{
+%%     ultra thin/.style= {line width=0.1pt},
+%%     very thin/.style=  {line width=0.2pt},
+%%     thin/.style=       {line width=0.4pt},% thin is the default
+%%     semithick/.style=  {line width=0.6pt},
+%%     thick/.style=      {line width=0.8pt},
+%%     very thick/.style= {line width=1.2pt},
+%%     ultra thick/.style={line width=1.6pt}
+%% }
+
+
+\pgfplotsset{
+  throughput/.style={
+    %xmin=0.6021, xmax=3.3010,
+    %xmin=0.3010, xmax=3.3010,
+    xtick=data,
+    xticklabels from table={data/m2-1core.txt}{batch-size},
+    xticklabel style={rotate=45, anchor=east, yshift=-1em},
+    %
+    ymin=0, ymax=300,
+    ytick distance=50,  % major ticks every 50k
+    minor y tick num=5, % minor ticks every 10k
+    %
+    ymajorgrids=true,
+    yminorgrids=true,
+    major grid style={black, thin},
+    minor grid style={gray, very thin},
+    %
+    height=2.16in, width=3.5in, scale only axis,
+    %
+    legend style={draw=none, fill=none,},
+    legend cell align={left},
+    %
+    set layers=axis on top, % to make 'axis foreground' layer
+    %
+    axis background/.style={fill=white},
+  },
+}
+
+\newcommand{\drawcurve}[3]{ %% 1 = nn-file, 2 = legend, 3 = color
+  
+  \addplot[draw=#3,ultra thick] table[x=log-batch-size, y expr=\thisrow{mean}/1000] {#1};
+  \addlegendentry{#2};
+
+%%   %% show the description in a text box
+%%   \begin{pgfonlayer}{axis foreground}
+%%     \node [
+%%       rectangle,
+%%       anchor=south east,
+%%       inner sep=0.5em, outer sep=0.5em, align=center,
+%%       draw=gray!50, fill=gray!12]
+%%     at (rel axis cs:1.0,0.0)
+%%     {#2};
+%%   \end{pgfonlayer}
+
+}
+
+
+
+\begin{document}
+
+\begin{tikzpicture}
+
+  \begin{axis}[
+      throughput,
+      xlabel={Batch Size},
+      ylabel={1,000 Responses / sec},
+      right-legend,
+    ]
+
+    \drawcurve
+        {data/graviton-1core.txt}
+        {graviton, 1 core}
+        {nu-gold}
+        
+    \drawcurve
+        {data/m2-1core.txt}
+        {M2, 1 core}
+        {nu-blue}
+        
+    \drawcurve
+        {data/m2-2core.txt}
+        {M2, 2 core}
+        {nu-green}
+        
+    \drawcurve
+        {data/m2-4core.txt}
+        {M2, 4 cores}
+        {nu-red}
+
+  \end{axis}
+
+
+\end{tikzpicture}
+
+
+
+\end{document}

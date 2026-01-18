@@ -152,53 +152,68 @@ This library is designed for high compatibility, but attempts to maintain accept
 While the parsing and logic is written in a high-level language, when processing batches the overhead compared to the Google C++ implementation is modest.
 In an informal test with ED25519 signatures stubbed to a no-op, this server respond to a single v0 request in 4.3 μs while the C++ code responded in 2.8 μs.
 
+Speed depends strongly on CPU architecture, on batch size, and on the protocol version.
+If performance is important to your application, we suggest you benchmark the code using your particular setup.
+
+The following script measures the throughput, or how quickly the code can respond to requests, as a function of batch size.
+It uses 4 cores by default; you can change this by modifying the `parallelism` parameter in the code.
+
+```
+clj -X:throughput
+```
+
+Example measurements responding to protocol version 15 on a 2023 M2 MacBook Air, and on an EC2 `t4g` Graviton2 instance:
+
+![throughput](plots/throughput.png)
+
+(The Google protocol is approximately 2× faster.)
 While this codebase is not intended for high-traffic production environments, it may be suitable for real-world use.
 
-### Benchmarks (Per-Request Latency)
+<!-- ### Benchmarks (Per-Request Latency) -->
 
-The following table compares the latency per request when processing 5,000 requests, either serially or in batches of 128.
+<!-- The following table compares the latency per request when processing 5,000 requests, either serially or in batches of 128. -->
 
-| Codebase   | Batch Size | Version       | Signature | Per Request (μs) |
-|------------|-----------:|---------------|-----------|-----------------:|
-| Google C++ |          1 | Google        | tweetnacl |              675 |
-| Google C++ |          1 | Google        | stubbed   |              1.8 |
-|------------|-----------:|---------------|-----------|-----------------:|
-| Clojure    |          1 | Google        | native    |             26.6 |
-| Clojure    |          1 | Google        | stubbed   |              4.3 |
-|------------|-----------:|---------------|-----------|-----------------:|
-| Clojure    |          1 | IETF Draft 15 | native    |             31.7 |
-| Clojure    |          1 | IETF Draft 15 | stubbed   |              9.2 |
-|------------|-----------:|---------------|-----------|-----------------:|
-| Clojure    |        128 | IETF Draft 15 | native    |              4.4 |
-| Clojure    |        128 | IETF Draft 15 | stubbed   |              4.2 |
-|------------|-----------:|---------------|-----------|-----------------:|
-| Clojure    |       1024 | random, mixed | native    |              7.7 |
-| Clojure    |       1024 | random, mixed | stubbed   |              7.6 |
+<!-- | Codebase   | Batch Size | Version       | Signature | Per Request (μs) | -->
+<!-- |------------|-----------:|---------------|-----------|-----------------:| -->
+<!-- | Google C++ |          1 | Google        | tweetnacl |              675 | -->
+<!-- | Google C++ |          1 | Google        | stubbed   |              1.8 | -->
+<!-- |------------|-----------:|---------------|-----------|-----------------:| -->
+<!-- | Clojure    |          1 | Google        | native    |             26.6 | -->
+<!-- | Clojure    |          1 | Google        | stubbed   |              4.3 | -->
+<!-- |------------|-----------:|---------------|-----------|-----------------:| -->
+<!-- | Clojure    |          1 | IETF Draft 15 | native    |             31.7 | -->
+<!-- | Clojure    |          1 | IETF Draft 15 | stubbed   |              9.2 | -->
+<!-- |------------|-----------:|---------------|-----------|-----------------:| -->
+<!-- | Clojure    |        128 | IETF Draft 15 | native    |              4.4 | -->
+<!-- | Clojure    |        128 | IETF Draft 15 | stubbed   |              4.2 | -->
+<!-- |------------|-----------:|---------------|-----------|-----------------:| -->
+<!-- | Clojure    |       1024 | random, mixed | native    |              7.7 | -->
+<!-- | Clojure    |       1024 | random, mixed | stubbed   |              7.6 | -->
 
-to reproduce these results, run `clj -X:load-test`
+<!-- to reproduce these results, run `clj -X:load-test` -->
 
-```
-Running with BouncyCastle ED25519 signatures
+<!-- ``` -->
+<!-- Running with BouncyCastle ED25519 signatures -->
 
-Evaluation count : 22686 in 6 samples of 3781 calls.
-             Execution time mean : 26.613360 µs
-    Execution time std-deviation : 76.163262 ns
-   Execution time lower quantile : 26.530910 µs ( 2.5%)
-   Execution time upper quantile : 26.689283 µs (97.5%)
-                   Overhead used : 1.268150 ns
+<!-- Evaluation count : 22686 in 6 samples of 3781 calls. -->
+<!--              Execution time mean : 26.613360 µs -->
+<!--     Execution time std-deviation : 76.163262 ns -->
+<!--    Execution time lower quantile : 26.530910 µs ( 2.5%) -->
+<!--    Execution time upper quantile : 26.689283 µs (97.5%) -->
+<!--                    Overhead used : 1.268150 ns -->
 
 
-Running with ED25519 signatures stubbed to no-op
+<!-- Running with ED25519 signatures stubbed to no-op -->
 
-Evaluation count : 143532 in 6 samples of 23922 calls.
-             Execution time mean : 4.298360 µs
-    Execution time std-deviation : 141.983103 ns
-   Execution time lower quantile : 4.176511 µs ( 2.5%)
-   Execution time upper quantile : 4.455419 µs (97.5%)
-                   Overhead used : 1.268150 ns
+<!-- Evaluation count : 143532 in 6 samples of 23922 calls. -->
+<!--              Execution time mean : 4.298360 µs -->
+<!--     Execution time std-deviation : 141.983103 ns -->
+<!--    Execution time lower quantile : 4.176511 µs ( 2.5%) -->
+<!--    Execution time upper quantile : 4.455419 µs (97.5%) -->
+<!--                    Overhead used : 1.268150 ns -->
 
-…
-```
+<!-- … -->
+<!-- ``` -->
 
 ## API
 
