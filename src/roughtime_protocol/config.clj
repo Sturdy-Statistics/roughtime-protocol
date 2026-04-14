@@ -126,6 +126,18 @@
    "TXRyan"
    {
     :name "time.txryan.com"
+    :version "IETF-Roughtime"
+    :version-no 0x8000000c
+    :supported-versions nil
+    :msg-size 1024
+    :public-key-type "ed25519"
+    :public-key "iBVjxg/1j7y1+kQUTBYdTabxCppesU/07D4PMDJk2WA="
+    :addresses [ {:protocol "udp"
+                  :address "time.txryan.com:2002"}]}
+
+   "TXRyan-goog"
+   {
+    :name "time.txryan.com"
     :version "Google-Roughtime"
     :version-no 0x00
     :supported-versions nil

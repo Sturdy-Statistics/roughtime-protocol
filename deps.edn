@@ -1,6 +1,5 @@
 {:paths ["src" "resources"]
- :deps {org.clojure/clojure         {:mvn/version "1.12.2"}
-        com.taoensso/truss          {:mvn/version "2.2.0"}
+ :deps {com.taoensso/truss          {:mvn/version "2.2.0"}
         com.taoensso/encore         {:mvn/version "3.95.1"}
 
         org.bouncycastle/bcutil-jdk18on {:mvn/version "1.83"}

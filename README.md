@@ -332,6 +332,11 @@ See the file `tree-notes.md` for details.
 Throughout the codebase, we use `!!` to denote values (or functions returning values) containing secrets.
 This convention is a reminder that such values should never be logged, serialized, printed, etc.
 
+## Acknowledgments
+
+1. Thanks to Tanner \([time.txryan.com](https://time.txryan.com)\) for identifying a bug in the response code and suggesting the fix!
+
+
 ## License
 
 Apache License 2.0
