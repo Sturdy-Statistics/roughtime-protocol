@@ -5,6 +5,7 @@
    [roughtime-protocol.tlv    :as tlv]
    [roughtime-protocol.srep   :as srep]
    [roughtime-protocol.sig    :as sig]
+   [roughtime-protocol.packet :as packet]
    [taoensso.truss :refer [have]])
   (:import
    (java.security PrivateKey)))
@@ -37,6 +38,7 @@
            ^bytes cert-bytes
            ^Integer index
            ^bytes path]}]
+  ;; Google protocol returns a bare TLV message
   (tlv/encode-rt-message
    {"SREP" (have some? srep-bytes)
     "SIG"  (have some? signature)
@@ -69,13 +71,14 @@
            ^bytes cert-bytes
            ^Integer index
            ^bytes path]}]
-  (tlv/encode-rt-message
-   {"SREP" (have some? srep-bytes)
-    "SIG"  (have some? signature)
-    "VER"  (e/long->uint32-le (have integer? ver))
-    "CERT" (have some? cert-bytes)
-    "INDX" (e/long->uint32-le (have integer? index))
-    "PATH" (have some? path)}))
+  (packet/encode-packet
+   (tlv/encode-rt-message
+    {"SREP" (have some? srep-bytes)
+     "SIG"  (have some? signature)
+     "VER"  (e/long->uint32-le (have integer? ver))
+     "CERT" (have some? cert-bytes)
+     "INDX" (e/long->uint32-le (have integer? index))
+     "PATH" (have some? path)})))
 
 ;; IETF protocol, versions 3-11
 
@@ -104,15 +107,16 @@
            ^Integer index
            ^bytes path
            ^Integer ver]}]
-  (tlv/encode-rt-message
-   {"SIG"  (have some? signature)
-    "NONC" (have some? nonce)
-    "TYPE" (have some? RESPONSE-TYPE)
-    "PATH" (have some? path)
-    "VER"  (e/long->uint32-le (have integer? ver))
-    "SREP" (have some? srep-bytes)
-    "CERT" (have some? cert-bytes)
-    "INDX" (e/long->uint32-le (have integer? index))}))
+  (packet/encode-packet
+   (tlv/encode-rt-message
+    {"SIG"  (have some? signature)
+     "NONC" (have some? nonce)
+     "TYPE" (have some? RESPONSE-TYPE)
+     "PATH" (have some? path)
+     "VER"  (e/long->uint32-le (have integer? ver))
+     "SREP" (have some? srep-bytes)
+     "CERT" (have some? cert-bytes)
+     "INDX" (e/long->uint32-le (have integer? index))})))
 
 ;; IETF protocol, versions 12-15
 
@@ -141,16 +145,17 @@
            ^bytes cert-bytes
            ^Integer index
            ^bytes path]}]
-  (tlv/encode-rt-message
-   {"SIG"  (have some? signature)
-    "NONC" (have some? nonce)
-    "TYPE" (have some? RESPONSE-TYPE)
-    "PATH" (have some? path)
-    "SREP" (have some? srep-bytes)
-    "CERT" (have some? cert-bytes)
-    "INDX" (e/long->uint32-le (have integer? index))}))
+  (packet/encode-packet
+   (tlv/encode-rt-message
+    {"SIG"  (have some? signature)
+     "NONC" (have some? nonce)
+     "TYPE" (have some? RESPONSE-TYPE)
+     "PATH" (have some? path)
+     "SREP" (have some? srep-bytes)
+     "CERT" (have some? cert-bytes)
+     "INDX" (e/long->uint32-le (have integer? index))})))
 
-;; --- Main Entry Point ---
+;;; Main Entry Point
 
 (defn response-bytes
   "Dispatches response construction based on the negotiated version."

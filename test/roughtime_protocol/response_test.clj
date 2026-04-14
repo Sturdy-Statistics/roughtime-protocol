@@ -6,6 +6,7 @@
    [roughtime-protocol.tlv      :as tlv]
    [roughtime-protocol.sig      :as sig]
    [roughtime-protocol.cert     :as rcert]
+   [roughtime-protocol.packet   :as packet]
    [roughtime-protocol.endian   :as e]))
 
 (set! *warn-on-reflection* true)
@@ -36,20 +37,21 @@
                                       :cert-bytes cert
                                       :index 0
                                       :path (byte-array 0)})
-          top   (tlv/decode-rt-message bs)]
+          {:keys [message _message-len]}
+          (packet/decode-packet bs :min-size-bytes 0)]
 
       ;; Top-level tags present
-      (is (every? #(contains? top %)
+      (is (every? #(contains? message %)
                   ["SIG" "NONC" "TYPE" "PATH" "SREP" "CERT" "INDX"]))
-      (is (= (-> top keys set)
+      (is (= (-> message keys set)
              (set ["SIG" "NONC" "TYPE" "PATH" "SREP" "CERT" "INDX"])))
 
       ;; INDX=0, PATH empty
-      (is (= 0 (e/uint32-le->long (get top "INDX"))))
-      (is (= 0 (alength ^bytes (get top "PATH"))))
+      (is (= 0 (e/uint32-le->long (get message "INDX"))))
+      (is (= 0 (alength ^bytes (get message "PATH"))))
 
       ;; Verify CERT using long-term key
-      (let [certb (get top "CERT")
+      (let [certb (get message "CERT")
             info  (rcert/verify-cert? certb lt-pub {:version version})]
         (is info)
         (is (= mint (:mint info)))
@@ -57,15 +59,15 @@
         ;; Extract online raw pubkey from DELE and verify SREP signature
         (let [;; onl-raw (:pubk info)
               ;; srepb   (get top "SREP")
-              sig     (get top "SIG")]
+              sig     (get message "SIG")]
           (is (= 64 (alength ^bytes sig)))))
 
       ;; Extract online raw pubkey from the verified CERT
-      (let [certb   (get top "CERT")
+      (let [certb   (get message "CERT")
             info    (rcert/verify-cert? certb lt-pub {:version version})
             onl-raw (:pubk info) ;; This is the raw 32-byte key from the DELE
-            srepb   (get top "SREP")
-            sig     (get top "SIG")
+            srepb   (get message "SREP")
+            sig     (get message "SIG")
             ;; Convert raw 32-byte key back to a Java PublicKey for verification
             onl-pub-reconstructed (sign/raw-pub32->public-key onl-raw)]
 
@@ -98,20 +100,21 @@
                                       :cert-bytes cert
                                       :index 0
                                       :path (byte-array 0)})
-          top   (tlv/decode-rt-message bs)]
+          {:keys [message _message-len]}
+          (packet/decode-packet bs :min-size-bytes 0)]
 
       ;; Top-level tags present
-      (is (every? #(contains? top %)
+      (is (every? #(contains? message %)
                   ["SIG" "NONC" "TYPE" "PATH" "VER" "SREP" "CERT" "INDX"]))
-      (is (= (-> top keys set)
+      (is (= (-> message keys set)
              (set ["SIG" "NONC" "TYPE" "PATH" "VER" "SREP" "CERT" "INDX"])))
 
       ;; INDX=0, PATH empty
-      (is (= 0 (e/uint32-le->long (get top "INDX"))))
-      (is (= 0 (alength ^bytes (get top "PATH"))))
+      (is (= 0 (e/uint32-le->long (get message "INDX"))))
+      (is (= 0 (alength ^bytes (get message "PATH"))))
 
       ;; Verify CERT using long-term key
-      (let [certb (get top "CERT")
+      (let [certb (get message "CERT")
             info  (rcert/verify-cert? certb lt-pub {:version version})]
         (is info)
         (is (= mint (:mint info)))
@@ -119,15 +122,15 @@
         ;; Extract online raw pubkey from DELE and verify SREP signature
         (let [;; onl-raw (:pubk info)
               ;; srepb   (get top "SREP")
-              sig     (get top "SIG")]
+              sig     (get message "SIG")]
           (is (= 64 (alength ^bytes sig)))))
 
       ;; Extract online raw pubkey from the verified CERT
-      (let [certb   (get top "CERT")
+      (let [certb   (get message "CERT")
             info    (rcert/verify-cert? certb lt-pub {:version version})
             onl-raw (:pubk info) ;; This is the raw 32-byte key from the DELE
-            srepb   (get top "SREP")
-            sig     (get top "SIG")
+            srepb   (get message "SREP")
+            sig     (get message "SIG")
             ;; Convert raw 32-byte key back to a Java PublicKey for verification
             onl-pub-reconstructed (sign/raw-pub32->public-key onl-raw)]
 
@@ -160,20 +163,21 @@
                                       :cert-bytes cert
                                       :index 0
                                       :path (byte-array 0)})
-          top   (tlv/decode-rt-message bs)]
+          {:keys [message _message-len]}
+          (packet/decode-packet bs :min-size-bytes 0)]
 
       ;; Top-level tags present
-      (is (every? #(contains? top %)
+      (is (every? #(contains? message %)
                   ["SREP" "SIG" "VER" "INDX" "PATH" "CERT"]))
-      (is (= (-> top keys set)
+      (is (= (-> message keys set)
              (set ["SREP" "SIG" "VER" "INDX" "PATH" "CERT"])))
 
       ;; INDX=0, PATH empty
-      (is (= 0 (e/uint32-le->long (get top "INDX"))))
-      (is (= 0 (alength ^bytes (get top "PATH"))))
+      (is (= 0 (e/uint32-le->long (get message "INDX"))))
+      (is (= 0 (alength ^bytes (get message "PATH"))))
 
       ;; Verify CERT using long-term key
-      (let [certb (get top "CERT")
+      (let [certb (get message "CERT")
             info  (rcert/verify-cert? certb lt-pub {:version version})]
         (is info)
         (is (= mint (:mint info)))
@@ -181,15 +185,15 @@
         ;; Extract online raw pubkey from DELE and verify SREP signature
         (let [;; onl-raw (:pubk info)
               ;; srepb   (get top "SREP")
-              sig     (get top "SIG")]
+              sig     (get message "SIG")]
           (is (= 64 (alength ^bytes sig)))))
 
       ;; Extract online raw pubkey from the verified CERT
-      (let [certb   (get top "CERT")
+      (let [certb   (get message "CERT")
             info    (rcert/verify-cert? certb lt-pub {:version version})
             onl-raw (:pubk info) ;; This is the raw 32-byte key from the DELE
-            srepb   (get top "SREP")
-            sig     (get top "SIG")
+            srepb   (get message "SREP")
+            sig     (get message "SIG")
             ;; Convert raw 32-byte key back to a Java PublicKey for verification
             onl-pub-reconstructed (sign/raw-pub32->public-key onl-raw)]
 
