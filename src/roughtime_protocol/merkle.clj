@@ -35,7 +35,8 @@
               ;; hash with sibling; tree shape determines order
               (case tree-order
                 :natural  (h l r)
-                :mirrored (h r l))))
+                :mirrored (h r l)
+                (throw (ex-info "Unknown tree-order" {:tree-order tree-order})))))
           pairs)))
 
 (defn- chop-path
@@ -97,7 +98,8 @@
                 :natural  (fn [even-bit? self sibling]
                             (if even-bit? [self sibling] [sibling self]))
                 :mirrored (fn [even-bit? self sibling]
-                            (if even-bit? [sibling self] [self sibling])))]
+                            (if even-bit? [sibling self] [self sibling]))
+                (throw (ex-info "Unknown tree-order" {:tree-order tree-order})))]
 
     (loop [i 0
            current initial-hash]

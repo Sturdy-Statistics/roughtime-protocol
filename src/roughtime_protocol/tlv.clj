@@ -5,6 +5,7 @@
    [roughtime-protocol.endian :as e]
    [roughtime-protocol.tag    :as tag])
   (:import
+   (java.nio ByteBuffer)
    (java.util Map)))
 
 (set! *warn-on-reflection* true)
@@ -53,10 +54,10 @@
         total-len      (+ header-len payload-len)
 
         result         (byte-array total-len)
-        bb             (le-buffer result)]
+        ^ByteBuffer bb (le-buffer result)]
 
     ;; 1. Write num_tags
-    (.putInt bb n)
+    (.putInt bb (unchecked-int n))
     ;; 2. Write offsets
     (doseq [o offsets] (.putInt bb (unchecked-int o)))
     ;; 3. Write tags
@@ -74,7 +75,7 @@
   [^bytes ba]
   (let [len (alength ba)]
     (when (< len 4) (throw (ex-info "Truncated message" {})))
-    (let [bb       (le-buffer ba)
+    (let [^ByteBuffer bb (le-buffer ba)
           num-tags (.getInt bb)]
       (when (neg? num-tags) (throw (ex-info "Negative tags count" {})))
       (when (> num-tags 1024) (throw (ex-info "Too many tags" {:count num-tags})))

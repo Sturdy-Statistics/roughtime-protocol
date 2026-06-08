@@ -2,7 +2,9 @@
   (:require
    [roughtime-protocol.util :as util :refer [slice le-buffer]]
    [roughtime-protocol.tag :as tag]
-   [roughtime-protocol.tlv :as tlv]))
+   [roughtime-protocol.tlv :as tlv])
+  (:import
+   (java.nio ByteBuffer)))
 
 (set! *warn-on-reflection* true)
 
@@ -14,7 +16,7 @@
   (let [msg-len (alength msg-bytes)
         total-len (+ 12 msg-len)
         result (byte-array total-len)
-        bb (le-buffer result)]
+        ^ByteBuffer bb (le-buffer result)]
     (.put bb ^bytes ROUGHTIM-MAGIC)
     (.putInt bb (unchecked-int msg-len))
     (.put bb msg-bytes)
@@ -46,10 +48,10 @@
     (when (< total-size 12)
       (throw (ex-info "Truncated packet: missing header" {:len total-size})))
 
-    (let [bb          (le-buffer packet)
-          magic-bytes (byte-array 8)
-          _           (.get bb magic-bytes)
-          msg-len     (Integer/toUnsignedLong (.getInt bb))]
+    (let [^ByteBuffer bb (le-buffer packet)
+          magic-bytes    (byte-array 8)
+          _              (.get bb magic-bytes)
+          msg-len        (Integer/toUnsignedLong (.getInt bb))]
 
       (validate-packet! total-size msg-len magic-bytes min-size-bytes)
 
@@ -64,7 +66,7 @@
   (let [total-size (alength packet)]
     (when (< total-size 12)
       (throw (ex-info "Truncated packet: missing header" {:len total-size})))
-    (let [bb (le-buffer (slice packet 0 8))
+    (let [^ByteBuffer bb (le-buffer (slice packet 0 8))
           magic-bytes (byte-array 8)
           _ (.get bb magic-bytes)]
       (util/bytes= ROUGHTIM-MAGIC magic-bytes))))

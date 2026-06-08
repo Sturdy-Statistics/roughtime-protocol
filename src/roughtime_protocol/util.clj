@@ -90,20 +90,20 @@
      (sha512-bytes 64 ba1 ba2)"
   (^bytes
    [^long n ^bytes ba]
-   (let [md (MessageDigest/getInstance "SHA-512")]
+   (let [^MessageDigest md (MessageDigest/getInstance "SHA-512")]
      (.update md ba)
      (slice (.digest md) 0 n)))
 
   (^bytes
    [^long n prefix-byte ^bytes ba]
-   (let [md (MessageDigest/getInstance "SHA-512")]
+   (let [^MessageDigest md (MessageDigest/getInstance "SHA-512")]
      (.update md (byte prefix-byte))
      (.update md ba)
      (slice (.digest md) 0 n)))
 
   (^bytes
    [^Integer n prefix-byte ^bytes ba & more]
-   (let [md (MessageDigest/getInstance "SHA-512")]
+   (let [^MessageDigest md (MessageDigest/getInstance "SHA-512")]
      (.update md (byte prefix-byte))
      (.update md ba)
      (doseq [^bytes x more]
@@ -114,7 +114,7 @@
 ;;; Time
 
 (defn now-seconds ^long []
-  (.getEpochSecond (Instant/now)))
+  (.getEpochSecond ^Instant (Instant/now)))
 
 (defn now-micros ^long []
   (let [^Instant now (Instant/now)]

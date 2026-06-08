@@ -13,7 +13,7 @@
 (def SECS-PER-DAY    (* 24 SECS-PER-HOUR))
 
 ;; Use Gregorian mean year (365.2425 d) so month = year/12.
-(def SECS-PER-YEAR  (long (Math/round (* 365.2425 SECS-PER-DAY))))
+(def SECS-PER-YEAR  (long (Math/round ^double (* 365.2425 SECS-PER-DAY))))
 (def SECS-PER-MONTH (quot SECS-PER-YEAR 12))
 (def SECS-PER-CENTURY (* 100 SECS-PER-YEAR))
 (def SECS-PER-MILLENNIUM (* 1000 SECS-PER-YEAR))
