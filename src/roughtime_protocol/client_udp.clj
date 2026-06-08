@@ -64,7 +64,7 @@
         (try
           (.receive sock recv)
           (let [n (.getLength recv)
-                out (Arrays/copyOf buf n)
+                out (Arrays/copyOf ^bytes buf (int n))
                 from (InetSocketAddress. (.getAddress recv) (.getPort recv))]
             {:bytes out :from from})
           (catch SocketTimeoutException _ nil))))))

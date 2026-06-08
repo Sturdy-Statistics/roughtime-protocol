@@ -33,7 +33,7 @@
 (defn gen-ed25519-kp
   "Generates a new Ed25519 KeyPair using the shared secure RNG."
   ^KeyPair []
-  (let [kpg (KeyPairGenerator/getInstance "Ed25519" "BC")]
+  (let [^KeyPairGenerator kpg (KeyPairGenerator/getInstance "Ed25519" "BC")]
     ;; Reusing the thread-local SecureRandom from util
     (.initialize kpg 255 ^SecureRandom @secure-rng)
     (.generateKeyPair kpg)))
@@ -64,7 +64,7 @@
   (let [params (Ed25519PublicKeyParameters. raw32 0)
         ;; Generates the standard DER-encoded SPKI structure
         spki-info (SubjectPublicKeyInfoFactory/createSubjectPublicKeyInfo params)
-        kf (KeyFactory/getInstance "Ed25519" "BC")]
+        ^KeyFactory kf (KeyFactory/getInstance "Ed25519" "BC")]
     (.generatePublic kf (X509EncodedKeySpec. (.getEncoded spki-info)))))
 
 (defn public-key->raw-pub32
@@ -81,7 +81,7 @@
   (let [params (Ed25519PrivateKeyParameters. seed32 0)
         ;; Generates the standard DER-encoded PKCS#8 structure
         pk-info (PrivateKeyInfoFactory/createPrivateKeyInfo params)
-        kf (KeyFactory/getInstance "Ed25519" "BC")]
+        ^KeyFactory kf (KeyFactory/getInstance "Ed25519" "BC")]
     (.generatePrivate kf (PKCS8EncodedKeySpec. (.getEncoded pk-info)))))
 
 (defn private-key->raw-seed32
@@ -101,7 +101,7 @@
 (defn pkcs8->private-key
   "Reconstructs an Ed25519 PrivateKey from a PKCS#8 byte array."
   ^PrivateKey [^bytes pkcs8-bytes]
-  (let [kf (KeyFactory/getInstance "Ed25519" "BC")
+  (let [^KeyFactory kf (KeyFactory/getInstance "Ed25519" "BC")
         spec (PKCS8EncodedKeySpec. pkcs8-bytes)]
     (.generatePrivate kf spec)))
 
@@ -115,7 +115,7 @@
 (defn spki->public-key
   "Reconstructs an Ed25519 PublicKey from an SPKI byte array."
   ^PublicKey [^bytes spki-bytes]
-  (let [kf (KeyFactory/getInstance "Ed25519" "BC")
+  (let [^KeyFactory kf (KeyFactory/getInstance "Ed25519" "BC")
         spec (X509EncodedKeySpec. spki-bytes)]
     (.generatePublic kf spec)))
 

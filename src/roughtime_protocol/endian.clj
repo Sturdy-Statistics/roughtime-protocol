@@ -2,6 +2,7 @@
   (:require
    [roughtime-protocol.util :refer [le-buffer]])
   (:import
+   (java.nio ByteBuffer)
    (java.util List)))
 
 (set! *warn-on-reflection* true)
@@ -10,14 +11,14 @@
   "Encode an unsigned 32-bit x into 4 little-endian bytes."
   ^bytes [^long x]
   (let [ba (byte-array 4)]
-    (.putInt (le-buffer ba) (unchecked-int x))
+    (.putInt ^ByteBuffer (le-buffer ba) (unchecked-int x))
     ba))
 
 (defn long->uint64-le
   "Encode an unsigned 64-bit x into 8 little-endian bytes."
   ^bytes [^long x]
   (let [ba (byte-array 8)]
-    (.putLong (le-buffer ba) x)
+    (.putLong ^ByteBuffer (le-buffer ba) x)
     ba))
 
 (defn uint32-le->long
@@ -25,7 +26,7 @@
   ^long [^bytes ba]
   (when (not= 4 (alength ba))
     (throw (ex-info "uint32-le->long requires exactly 4 bytes" {:actual (alength ba)})))
-  (Integer/toUnsignedLong (.getInt (le-buffer ba))))
+  (Integer/toUnsignedLong (.getInt ^ByteBuffer (le-buffer ba))))
 
 (defn uint64-le->bigint
   "Decode 8 LE bytes to an unsigned 64-bit BigInteger [0, 2^64-1]."
@@ -42,7 +43,7 @@
   (let [n (alength ba)]
     (when (pos? (mod n 4))
       (throw (ex-info "list must be a multiple of 4 bytes" {:len n})))
-    (let [bb (le-buffer ba)
+    (let [^ByteBuffer bb (le-buffer ba)
           word-count (/ n 4)]
       (vec (repeatedly word-count #(Integer/toUnsignedLong (.getInt bb)))))))
 
@@ -50,7 +51,7 @@
   "Concatenate a list of uint32s into a single little-endian byte[]."
   ^bytes [^List nums]
   (let [ba (byte-array (* 4 (count nums)))
-        bb (le-buffer ba)]
+        ^ByteBuffer bb (le-buffer ba)]
     (doseq [n nums]
       (.putInt bb (unchecked-int n)))
     ba))

@@ -15,7 +15,7 @@
 
    [taoensso.truss :refer [have]])
   (:import
-   (java.security PrivateKey)))
+   (java.security KeyPair PrivateKey)))
 
 (set! *warn-on-reflection* true)
 
@@ -26,7 +26,7 @@
     {every supported version} ↦ DELE cert compatible with that version"
   [^PrivateKey lt-prv!! & {:keys [expires-in-seconds]
                            :or {expires-in-seconds 3600}}]
-  (let [online-key (sign/gen-ed25519-kp)
+  (let [^KeyPair online-key (sign/gen-ed25519-kp)
 
         ;; Google protocol specifies time in microseconds; all other
         ;; protocols specify time in seconds.
